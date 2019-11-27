@@ -143,6 +143,7 @@ class HCSR04:
     def _dist_two_wire(self):
         if _USE_PULSEIO:
             self._echo.clear()       # Discard any previous pulse values
+            self._echo.resume()      # Start listening early
         self._trig.value = True  # Set trig high
         time.sleep(0.00001)      # 10 micro seconds 10/1000/1000
         self._trig.value = False # Set trig low
@@ -150,14 +151,14 @@ class HCSR04:
         pulselen = None
         timestamp = time.monotonic()
         if _USE_PULSEIO:
-            self._echo.resume()
-            while not self._echo:
+            time.sleep(0.1)      # Wait for a response
+            while len(self._echo) < 2:
                 # Wait for a pulse
                 if (time.monotonic() - timestamp) > self._timeout:
                     self._echo.pause()
                     raise RuntimeError("Timed out")
             self._echo.pause()
-            pulselen = self._echo[0]
+            pulselen = self._echo[1]
         else:
             # OK no hardware pulse support, we'll just do it by hand!
             # hang out while the pin is low
