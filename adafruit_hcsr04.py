@@ -94,14 +94,20 @@ class HCSR04:
             sensor before assuming it isn't going to answer. Should *not* be
             set to less than 0.05 seconds!
         """
+        global _USE_PULSEIO
         self._timeout = timeout
         self._trig = DigitalInOut(trigger_pin)
         self._trig.direction = Direction.OUTPUT
 
         if _USE_PULSEIO:
-            self._echo = PulseIn(echo_pin)
-            self._echo.pause()
-            self._echo.clear()
+            try:
+                self._echo = PulseIn(echo_pin)
+                self._echo.pause()
+                self._echo.clear()
+            except RuntimeError:
+                _USE_PULSEIO = False
+                self._echo = DigitalInOut(echo_pin)
+                self._echo.direction = Direction.INPUT
         else:
             self._echo = DigitalInOut(echo_pin)
             self._echo.direction = Direction.INPUT
