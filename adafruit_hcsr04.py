@@ -40,7 +40,7 @@ try:
 except ImportError:
     pass  # This is OK, we'll try to bitbang it!
 
-__version__ = "0.0.0-auto.0"
+__version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_HCSR04.git"
 
 
