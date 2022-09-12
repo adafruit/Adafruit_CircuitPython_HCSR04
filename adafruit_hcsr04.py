@@ -32,6 +32,13 @@ library.
 import time
 from digitalio import DigitalInOut, Direction
 
+try:
+    from typing import Optional, Type
+    from types import TracebackType
+    from microcontroller import Pin
+except ImportError:
+    pass
+
 _USE_PULSEIO = False
 try:
     from pulseio import PulseIn
@@ -68,7 +75,9 @@ class HCSR04:
             time.sleep(0.1)
     """
 
-    def __init__(self, trigger_pin, echo_pin, *, timeout=0.1):
+    def __init__(
+        self, trigger_pin: Pin, echo_pin: Pin, *, timeout: float = 0.1
+    ) -> None:
         """
         :param trigger_pin: The pin on the microcontroller that's connected to the
             ``Trig`` pin on the HC-SR04.
@@ -92,21 +101,26 @@ class HCSR04:
             self._echo = DigitalInOut(echo_pin)
             self._echo.direction = Direction.INPUT
 
-    def __enter__(self):
+    def __enter__(self) -> "HCSR04":
         """Allows for use in context managers."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
         """Automatically de-initialize after a context manager."""
         self.deinit()
 
-    def deinit(self):
+    def deinit(self) -> None:
         """De-initialize the trigger and echo pins."""
         self._trig.deinit()
         self._echo.deinit()
 
     @property
-    def distance(self):
+    def distance(self) -> float:
         """Return the distance measured by the sensor in cm.
 
         This is the function that will be called most often in user code. The
@@ -126,7 +140,7 @@ class HCSR04:
         """
         return self._dist_two_wire()  # at this time we only support 2-wire meausre
 
-    def _dist_two_wire(self):
+    def _dist_two_wire(self) -> float:
         if _USE_PULSEIO:
             self._echo.clear()  # Discard any previous pulse values
         self._trig.value = True  # Set trig high
