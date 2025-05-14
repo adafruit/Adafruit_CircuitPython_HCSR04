@@ -30,11 +30,13 @@ library.
 """
 
 import time
+
 from digitalio import DigitalInOut, Direction
 
 try:
-    from typing import Optional, Type
     from types import TracebackType
+    from typing import Optional, Type
+
     from microcontroller import Pin
 except ImportError:
     pass
@@ -75,9 +77,7 @@ class HCSR04:
             time.sleep(0.1)
     """
 
-    def __init__(
-        self, trigger_pin: Pin, echo_pin: Pin, *, timeout: float = 0.1
-    ) -> None:
+    def __init__(self, trigger_pin: Pin, echo_pin: Pin, *, timeout: float = 0.1) -> None:
         """
         :param trigger_pin: The pin on the microcontroller that's connected to the
             ``Trig`` pin on the HC-SR04.
